@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DisableCloudtrailTamplering",
+      "Action": [
+        "cloudtrail:Remove*",
+        "cloudtrail:Delete*",
+        "cloudtrail:Stop*",
+        "cloudtrail:Update*"
+      ],
+      "Effect": "Deny",
+      "Resource": "*"
+    }
+  ]
+}

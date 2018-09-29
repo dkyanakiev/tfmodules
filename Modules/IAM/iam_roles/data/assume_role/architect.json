@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "lambda.amazonaws.com",
+          "elasticbeanstalk.amazonaws.com",
+          "ec2.amazonaws.com",
+          "rds.amazonaws.com",
+          "apigateway.amazonaws.com",
+          "autoscaling.amazonaws.com",
+          "config.amazonaws.com",
+          "ecs.amazonaws.com",
+          "dynamodb.amazonaws.com"
+        ]
+      },
+      "Sid": ""
+     }, {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::${account_id}:saml-provider/ko.idp"
+      },
+      "Action": "sts:AssumeRoleWithSAML",
+      "Condition": {
+        "StringEquals": {
+          "SAML:aud": "https://signin.aws.amazon.com/saml"
+        }
+      }
+    }    
+  ]
+}

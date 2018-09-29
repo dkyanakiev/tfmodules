@@ -1,0 +1,192 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DisableCloudtrailTamplering",
+            "Action": [
+                "cloudtrail:Remove*",
+                "cloudtrail:Delete*",
+                "cloudtrail:Stop*",
+                "cloudtrail:Update*"
+            ],
+            "Effect": "Deny",
+            "Resource": "*"
+        },
+        {
+            "Sid": "DenyEC2Tagging",
+            "Effect": "Deny",
+            "Action": [
+                "ec2:CreateTags",
+                "ec2:DeleteTags"
+            ],
+            "Resource": "arn:aws:ec2:::*"
+        },
+        {
+            "Sid": "AllowEC2BasedOnTag",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:RebootInstances",
+                "ec2:StopInstances",
+                "ec2:StartInstances",
+                "ec2:GetConsoleScreenshot"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEqualsIgnoreCase": {
+                    "ec2:ResourceTag/application_id": "${application_id}"
+                }
+            }
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:DescribeAlarmHistory",
+                "cloudwatch:DescribeAlarms",
+                "cloudwatch:DescribeAlarmsForMetric",
+                "cloudwatch:GetMetricData",
+                "cloudwatch:GetMetricStatistics",
+                "cloudwatch:ListMetrics",
+                "rds:DescribeDBInstances",
+                "iam:ListUsers",
+                "iam:ListRoles",
+                "ec2:GetConsoleOutput",
+                "ec2:Describe*",
+                "elasticloadbalancing:Describe*",
+                "autoscaling:Describe*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Sid": "DenyRDSTagging",
+            "Effect": "Deny",
+            "Action": [
+                "rds:AddTagsToResource",
+                "rds:RemoveTagsFromResource"
+            ],
+            "Resource": "arn:aws:rds:*"
+        },
+        {
+            "Sid": "AllowRDSByAppTag",
+            "Effect": "Allow",
+            "Action": "rds:*",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "rds:db-tag/application_id": "${application_id}"
+                }
+            }
+        },
+        {
+            "Sid": "AllowAutoparkFileOperations",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${autopark_bucket}/schedule-${application_id}.yaml"
+            ]
+        },
+        {
+            "Sid": "AllowReadAutoparkBucketFiles",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${autopark_bucket}/*"
+            ]
+        },
+        {
+            "Sid": "AllowListAutoparkBucket",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${autopark_bucket}"
+            ]
+        },
+        {
+            "Sid": "AllowUserToSeeBucketListInTheConsole",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*"
+            ]
+        },
+        {
+            "Sid": "AllowUserToListBucketContentsInTheConsole",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": [
+                "arn:aws:s3:::${app_data_bucket}"
+            ]
+        },
+        {
+            "Sid": "AllowUserReadWriteDeleteOnTheirFolder",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject*",
+                "s3:GetObject*",
+                "s3:DeleteObject*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${app_data_bucket}/${application_code}-${application_id}/*"
+            ]
+        },
+        {
+            "Sid": "ReadDeploymentGroupsAndUpdateDeployments",
+            "Effect": "Allow",
+            "Action": [
+                "codedeploy:GetDeploymentGroup",
+                "codedeploy:ListDeploymentGroups",
+                "codedeploy:BatchGetDeploymentGroups",
+                "codedeploy:ListDeployments",
+                "codedeploy:CreateDeployment",
+                "codedeploy:GetDeployment",
+                "codedeploy:BatchGetDeployments"
+            ],
+            "Resource": "arn:aws:codedeploy:*:*:deploymentgroup:${application_code}*"
+        },
+        {
+            "Sid": "ReadAndUpdateApplications",
+            "Effect": "Allow",
+            "Action": [
+                "codedeploy:GetApplication",
+                "codedeploy:ListApplications",
+                "codedeploy:UpdateApplication",
+                "codedeploy:BatchGetApplications",
+                "codedeploy:GetApplicationRevision",
+                "codedeploy:ListApplicationRevisions",
+                "codedeploy:RegisterApplicationRevision",
+                "codedeploy:BatchGetApplicationRevisions"
+            ],
+            "Resource": "arn:aws:codedeploy:*:*:application:${application_code}*"
+        },
+        {
+            "Sid": "StopAndContinueDeployments",
+            "Effect": "Allow",
+            "Action": [
+                "codedeploy:StopDeployment",
+                "codedeploy:ContinueDeployment"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "UseConsoleForCodeDeploy",
+            "Effect": "Allow",
+            "Action": [
+                "codedeploy:Batch*",
+                "codedeploy:Get*",
+                "codedeploy:List*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
